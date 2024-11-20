@@ -5,6 +5,9 @@ injector:
   enabled: true
   externalVaultAddr: http://vault.vault.svc.cluster.local:8200
 
+  image:
+    repository: "docker.io/hashicorp/vault-k8s"
+
   replicas: 3
 
   nodeSelector:
