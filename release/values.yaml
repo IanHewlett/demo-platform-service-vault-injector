@@ -1,0 +1,60 @@
+server:
+  enabled : false
+
+injector:
+  enabled: true
+  externalVaultAddr: http://vault.vault.svc.cluster.local:8200
+
+  replicas: 3
+
+  nodeSelector:
+    nodegroup: "management-nodes"
+
+  tolerations:
+    - key: "dedicated"
+      operator: "Equal"
+      value: "management"
+      effect: "NoSchedule"
+
+  strategy:
+    type: "RollingUpdate"
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+
+  podDisruptionBudget:
+    maxUnavailable: "10%"
+
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "50Mi"
+    limits:
+      cpu: "500m"
+      memory: "500Mi"
+
+  agentDefaults:
+    cpuLimit: "500m"
+    cpuRequest: "10m"
+    memLimit: "128Mi"
+    memRequest: "64Mi"
+
+  affinity: ""
+
+  topologySpreadConstraints:
+    - labelSelector:
+        matchLabels:
+          "app.kubernetes.io/name": "vault-agent-injector"
+          "app.kubernetes.io/instance": "vault"
+          component: "webhook"
+      maxSkew: 1
+      topologyKey: "topology.kubernetes.io/zone"
+      whenUnsatisfiable: "DoNotSchedule"
+    - labelSelector:
+        matchLabels:
+          "app.kubernetes.io/name": "vault-agent-injector"
+          "app.kubernetes.io/instance": "vault"
+          component: "webhook"
+      maxSkew: 1
+      topologyKey: "kubernetes.io/hostname"
+      whenUnsatisfiable: "DoNotSchedule"
